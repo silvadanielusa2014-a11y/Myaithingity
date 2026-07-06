@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Character Creator</title>
+
+    <link rel="stylesheet" href="css/creator.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Character Creator</h1>
+
+    <label>Name</label>
+    <input id="name" placeholder="Character name">
+
+
+    <label>Description</label>
+    <textarea id="description"
+    placeholder="Who are they?"></textarea>
+
+
+    <label>Personality traits</label>
+    <textarea id="personality"
+    placeholder="Friendly, sarcastic, brave"></textarea>
+
+
+    <label>Speaking tone</label>
+    <input id="tone"
+    placeholder="Casual, formal, robotic">
+
+
+    <label>Uses emojis?</label>
+    <select id="emojis">
+
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+
+    </select>
+
+
+    <label>Scenario</label>
+    <textarea id="scenario"
+    placeholder="Where does the roleplay happen?"></textarea>
+
+
+    <label>Character rules</label>
+    <textarea id="rules"
+    placeholder="Stay in character..."></textarea>
+
+
+    <button id="create">
+        Export Character JSON
+    </button>
+
+
+</div>
+
+
+<script type="module" src="js/creator.js"></script>
+
+
+</body>
+</html>
