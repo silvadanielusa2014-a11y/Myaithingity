@@ -1,64 +1,162 @@
-import { startAI, askAI } from "./ai.js";
+import {
+    startAI,
+    askAI
+} from "./ai.js";
 
-const chat = document.getElementById("chat");
-const status = document.getElementById("status");
-const input = document.getElementById("message");
-const send = document.getElementById("send");
+import {
+    loadCharacter,
+    createCharacterPrompt
+} from "./characters.js";
+
+import {
+    getMemory,
+    saveMessage
+} from "./memory.js";
+
+import {
+    globalRules
+} from "./rules.js";
 
 
-function addMessage(text, type) {
+let character;
 
-    const div = document.createElement("div");
+let systemPrompt;
 
-    div.className = "message " + type;
 
-    div.textContent = text;
+const chat =
+document.getElementById("chat");
+
+const input =
+document.getElementById("message");
+
+const button =
+document.getElementById("send");
+
+const status =
+document.getElementById("status");
+
+
+function addMessage(text,type){
+
+    const div =
+    document.createElement("div");
+
+    div.className =
+    "message " + type;
+
+    div.textContent =
+    text;
 
     chat.appendChild(div);
 
-    chat.scrollTop = chat.scrollHeight;
-
 }
 
 
-async function main() {
 
-    status.textContent = "Loading AI model...";
+async function setup(){
+
+    status.textContent =
+    "Loading character...";
+
+
+    character =
+    await loadCharacter(
+        "default.json"
+    );
+
+
+    systemPrompt =
+        globalRules
+        +
+        "\n\n"
+        +
+        createCharacterPrompt(
+            character
+        );
+
+
+    status.textContent =
+    "Loading AI...";
+
 
     await startAI();
 
-    status.textContent = "AI ready.";
+
+    status.textContent =
+    `${character.name} ready`;
 
 }
 
 
-async function sendMessage() {
 
-    const text = input.value.trim();
+async function sendMessage(){
 
-    if (!text) return;
+    const text =
+    input.value.trim();
 
-    input.value = "";
 
-    addMessage("You: " + text, "user");
+    if(!text)return;
 
-    const response = await askAI(text);
 
-    addMessage("AI: " + response, "ai");
+    input.value="";
+
+
+    addMessage(
+        "You: "+text,
+        "user"
+    );
+
+
+    saveMessage(
+        "user",
+        text
+    );
+
+
+    const reply =
+    await askAI(
+
+        systemPrompt,
+
+        getMemory()
+
+    );
+
+
+    addMessage(
+
+        character.name+
+        ": "+
+        reply,
+
+        "ai"
+
+    );
+
+
+    saveMessage(
+
+        "assistant",
+
+        reply
+
+    );
 
 }
 
 
-send.addEventListener("click", sendMessage);
+
+button.onclick =
+sendMessage;
 
 
-input.addEventListener("keydown", (event) => {
+input.onkeydown =
+(e)=>{
 
-    if (event.key === "Enter") {
+    if(e.key==="Enter")
         sendMessage();
-    }
 
-});
+};
 
 
-main();
+setup();
