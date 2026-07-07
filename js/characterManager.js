@@ -2,72 +2,141 @@ export function createCharacter(data) {
 
     return {
 
-        name: data.name || "Unnamed",
+        id:
+        data.id || "custom-character",
 
-        description:
-            data.description || "",
 
-        personality:
-            data.personality || [],
+        metadata: {
 
-        speech_style: {
+            name:
+            data.name || "Unnamed Character",
 
-            tone:
-            data.tone || "normal",
+            creator:
+            data.creator || "Unknown",
 
-            uses_emojis:
-            data.emojis || false
+            description:
+            data.description || ""
 
         },
 
-        rules:
-            data.rules || [
-                "Stay in character."
-            ],
 
-        scenario:
-            data.scenario || ""
+        asset_file:
+        data.asset_file || "defaultAssets.json",
+
+
+
+        chat: {
+
+            greeting:
+            data.greeting || "",
+
+
+            scenario:
+            data.scenario || "",
+
+
+            personality:
+            data.personality || [],
+
+
+            speech_style: {
+
+                tone:
+                data.tone || "Normal",
+
+
+                uses_emojis:
+                data.emojis || false
+
+            },
+
+
+            rules:
+            data.rules || [
+
+                "Stay in character."
+
+            ]
+
+        },
+
+
+        memory: {
+
+            enabled: true,
+
+            remember_user: true
+
+        },
+
+
+        ai: {
+
+            preferred_model:
+            data.model || "llama-3.2-1b"
+
+        }
 
     };
 
 }
 
 
+
 export function exportCharacter(character) {
 
+
     const json =
-        JSON.stringify(
-            character,
-            null,
-            4
-        );
+    JSON.stringify(
+
+        character,
+
+        null,
+
+        4
+
+    );
+
 
 
     const blob =
-        new Blob(
-            [json],
-            {
-                type:
-                "application/json"
-            }
-        );
+    new Blob(
+
+        [json],
+
+        {
+
+            type:
+            "application/json"
+
+        }
+
+    );
+
 
 
     const url =
-        URL.createObjectURL(blob);
+    URL.createObjectURL(blob);
+
 
 
     const link =
-        document.createElement("a");
+    document.createElement("a");
 
 
-    link.href = url;
+
+    link.href =
+    url;
+
+
 
     link.download =
-        `${character.name}.json`;
+    `${character.metadata.name}.json`;
+
 
 
     link.click();
+
 
 
     URL.revokeObjectURL(url);
