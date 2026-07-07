@@ -1,0 +1,63 @@
+body {
+
+    background:#111;
+
+    color:white;
+
+    font-family:Arial;
+
+}
+
+
+
+.container {
+
+    max-width:800px;
+
+    margin:auto;
+
+    padding:20px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:15px;
+
+}
+
+
+
+input,
+textarea,
+select {
+
+    padding:10px;
+
+    border-radius:5px;
+
+}
+
+
+
+button {
+
+    padding:12px;
+
+    cursor:pointer;
+
+}
+
+
+
+.model-card {
+
+    border:1px solid #555;
+
+    padding:15px;
+
+    margin:10px 0;
+
+    border-radius:10px;
+
+}
