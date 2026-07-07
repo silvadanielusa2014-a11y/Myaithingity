@@ -18,6 +18,14 @@ export async function startAI(
     modelId
 ) {
 
+    if (!modelId) {
+
+        throw new Error(
+            "No AI model selected."
+        );
+
+    }
+
     currentModel =
         modelId;
 
