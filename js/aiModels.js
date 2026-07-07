@@ -1,37 +1,10 @@
-const models = [
+import {
+    createElement,
+    clear
+} from "./ui.js";
 
-    {
-        id:
-        "Llama-3.2-1B-Instruct",
 
-        name:
-        "Llama 3.2 1B",
-
-        size:
-        "≈700MB",
-
-        installed:
-        false
-
-    },
-
-    {
-        id:
-        "Phi-4-mini",
-
-        name:
-        "Phi-4 Mini",
-
-        size:
-        "≈2GB",
-
-        installed:
-        false
-
-    }
-
-];
-
+let models = [];
 
 
 const container =
@@ -39,49 +12,84 @@ document.getElementById("models");
 
 
 
+async function loadModels(){
+
+    const response =
+    await fetch(
+        "./models/models.json"
+    );
+
+
+    const data =
+    await response.json();
+
+
+    models =
+    data.models;
+
+
+    renderModels();
+
+}
+
+
+
 function renderModels(){
 
-
-    container.innerHTML = "";
+    clear(container);
 
 
     models.forEach(model => {
 
 
         const card =
-        document.createElement("div");
+        createElement(
+            "div",
+            "model-card"
+        );
 
 
-        card.className =
-        "model-card";
+        const title =
+        createElement(
+            "h2",
+            "",
+            model.name
+        );
 
 
-        card.innerHTML = `
+        const info =
+        createElement(
+            "p",
+            "",
+            `${model.provider} • ${model.size}`
+        );
 
-            <h2>
-            ${model.name}
-            </h2>
 
-            <p>
-            Size: ${model.size}
-            </p>
+        const description =
+        createElement(
+            "p",
+            "",
+            model.description
+        );
 
-            <p>
-            Status:
-            ${model.installed
-                ? "Installed"
-                : "Not installed"}
-            </p>
 
-            <button>
-            ${
-                model.installed
-                ? "Remove"
-                : "Download"
-            }
-            </button>
+        const button =
+        createElement(
+            "button",
+            "",
+            model.installed
+            ? "Remove"
+            : "Download"
+        );
 
-        `;
+
+        card.appendChild(title);
+
+        card.appendChild(info);
+
+        card.appendChild(description);
+
+        card.appendChild(button);
 
 
         container.appendChild(card);
@@ -89,17 +97,8 @@ function renderModels(){
 
     });
 
-
 }
 
 
-document
-.getElementById("back")
-.onclick = () => {
 
-    history.back();
-
-};
-
-
-renderModels();
+loadModels();
