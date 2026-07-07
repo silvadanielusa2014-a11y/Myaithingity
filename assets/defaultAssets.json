@@ -1,6 +1,24 @@
 {
     "version": 1,
 
+    "metadata": {
+
+        "name": "Unnamed Asset Pack",
+
+        "author": "Unknown",
+
+        "description": "",
+
+        "website": "",
+
+        "license": "",
+
+        "created": "",
+
+        "updated": ""
+
+    },
+
     "images": {
 
         "static_icons": true,
@@ -27,18 +45,20 @@
 
         "banner": "",
 
-        "gallery": [
-
-        ]
+        "gallery": []
 
     },
 
     "audio": {
 
         "greeting": "",
+
         "voice": "",
+
         "ambient": "",
+
         "typing": "",
+
         "notification": ""
 
     },
@@ -46,7 +66,9 @@
     "video": {
 
         "idle": "",
+
         "talking": "",
+
         "intro": ""
 
     },
@@ -54,6 +76,7 @@
     "fonts": {
 
         "chat": "",
+
         "title": ""
 
     },
@@ -61,7 +84,9 @@
     "theme": {
 
         "accent_color": "",
+
         "background": "",
+
         "css": ""
 
     },
