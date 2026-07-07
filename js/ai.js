@@ -1,47 +1,77 @@
-import * as webllm from
-"https://esm.run/@mlc-ai/web-llm";
+import {
+
+    loadModel,
+
+    generate
+
+} from "./webllm.js";
 
 
-let engine;
+
+let activeModel = null;
 
 
-export async function startAI(){
 
-    engine =
-    await webllm.CreateMLCEngine(
+export async function startAI(
+    model
+){
 
-        "Llama-3.2-1B-Instruct-q4f16_1"
+    activeModel =
+    model;
+
+
+    await loadModel(
+
+        model,
+
+        progress => {
+
+            console.log(
+                progress.text
+            );
+
+        }
 
     );
 
 }
 
 
+
 export async function askAI(
     systemPrompt,
-    messages
+    memory
 ){
 
-    const response =
-    await engine.chat.completions.create({
 
-        messages:[
+    const messages = [
 
-            {
-                role:"system",
-                content:systemPrompt
-            },
+        {
 
-            ...messages
+            role:"system",
 
-        ]
+            content:
+            systemPrompt
 
-    });
+        },
 
 
-    return response
-        .choices[0]
-        .message
-        .content;
+        ...memory.map(message => ({
+
+            role:
+            message.role,
+
+            content:
+            message.content
+
+        }))
+
+    ];
+
+
+
+    return await generate(
+        messages
+    );
 
 }
