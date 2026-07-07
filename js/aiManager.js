@@ -1,19 +1,28 @@
 import {
+
     startAI,
-    askAI
+
+    askAI,
+
+    askAIStream
+
 } from "./ai.js";
 
 
-let currentModel = null;
 
-let initialized = false;
+let ready = false;
 
-
-
-export async function initializeAI(modelId) {
+let activeModel = null;
 
 
-    currentModel = modelId;
+
+export async function initializeAI(
+    modelId
+) {
+
+
+    activeModel =
+        modelId;
 
 
     await startAI(
@@ -21,22 +30,22 @@ export async function initializeAI(modelId) {
     );
 
 
-    initialized = true;
+    ready = true;
 
 }
 
 
 
-export async function generateResponse(
+export async function chat(
     systemPrompt,
     memory
 ) {
 
 
-    if (!initialized) {
+    if (!ready) {
 
         throw new Error(
-            "AI not initialized"
+            "AI is not initialized."
         );
 
     }
@@ -54,16 +63,46 @@ export async function generateResponse(
 
 
 
-export function getCurrentModel(){
+export async function chatStream(
+    systemPrompt,
+    memory,
+    callback
+) {
 
-    return currentModel;
+
+    if (!ready) {
+
+        throw new Error(
+            "AI is not initialized."
+        );
+
+    }
+
+
+    return await askAIStream(
+
+        systemPrompt,
+
+        memory,
+
+        callback
+
+    );
 
 }
 
 
 
-export function isReady(){
+export function isAIReady(){
 
-    return initialized;
+    return ready;
+
+}
+
+
+
+export function getActiveModel(){
+
+    return activeModel;
 
 }
