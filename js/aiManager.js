@@ -4,38 +4,24 @@ import {
 } from "./ai.js";
 
 
-
 let currentModel = null;
 
-let ready = false;
+let initialized = false;
 
 
 
-const DEFAULT_MODEL =
-"Llama-3.2-1B-Instruct";
+export async function initializeAI(modelId) {
 
 
-
-export async function initializeAI(
-    model = DEFAULT_MODEL
-){
-
-    currentModel = model;
-
-
-    console.log(
-        "Loading AI:",
-        currentModel
-    );
+    currentModel = modelId;
 
 
     await startAI(
-        currentModel
+        modelId
     );
 
 
-    ready = true;
-
+    initialized = true;
 
 }
 
@@ -43,10 +29,11 @@ export async function initializeAI(
 
 export async function generateResponse(
     systemPrompt,
-    messages
-){
+    memory
+) {
 
-    if(!ready){
+
+    if (!initialized) {
 
         throw new Error(
             "AI not initialized"
@@ -59,7 +46,7 @@ export async function generateResponse(
 
         systemPrompt,
 
-        messages
+        memory
 
     );
 
@@ -75,18 +62,8 @@ export function getCurrentModel(){
 
 
 
-export function isAIReady(){
+export function isReady(){
 
-    return ready;
-
-}
-
-
-
-export function unloadAI(){
-
-    currentModel = null;
-
-    ready = false;
+    return initialized;
 
 }
