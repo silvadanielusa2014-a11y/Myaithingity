@@ -4,8 +4,15 @@ import {
 } from "./ui.js";
 
 
-let models = [];
+import {
+    downloadModel,
+    deleteModel,
+    hasModel
+} from "./modelManager.js";
 
+
+
+let models = [];
 
 const container =
 document.getElementById("models");
@@ -13,6 +20,7 @@ document.getElementById("models");
 
 
 async function loadModels(){
+
 
     const response =
     await fetch(
@@ -28,18 +36,27 @@ async function loadModels(){
     data.models;
 
 
-    renderModels();
+    await renderModels();
 
 }
 
 
 
-function renderModels(){
+
+async function renderModels(){
+
 
     clear(container);
 
 
-    models.forEach(model => {
+    for(const model of models){
+
+
+        const installed =
+        await hasModel(
+            model.id
+        );
+
 
 
         const card =
@@ -47,6 +64,7 @@ function renderModels(){
             "div",
             "model-card"
         );
+
 
 
         const title =
@@ -57,12 +75,14 @@ function renderModels(){
         );
 
 
+
         const info =
         createElement(
             "p",
             "",
             `${model.provider} • ${model.size}`
         );
+
 
 
         const description =
@@ -73,14 +93,58 @@ function renderModels(){
         );
 
 
+
         const button =
         createElement(
             "button",
             "",
-            model.installed
+            installed
             ? "Remove"
             : "Download"
         );
+
+
+
+        button.onclick =
+        async () => {
+
+
+            button.disabled =
+            true;
+
+
+
+            if(installed){
+
+
+                await deleteModel(
+                    model.id
+                );
+
+
+            }
+
+            else {
+
+
+                button.textContent =
+                "Downloading...";
+
+
+                await downloadModel(
+                    model
+                );
+
+
+            }
+
+
+
+            await renderModels();
+
+
+        };
+
 
 
         card.appendChild(title);
@@ -95,7 +159,7 @@ function renderModels(){
         container.appendChild(card);
 
 
-    });
+    }
 
 }
 
