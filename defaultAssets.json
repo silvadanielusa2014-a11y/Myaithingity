@@ -1,0 +1,73 @@
+{
+    "version": 1,
+
+    "images": {
+
+        "static_icons": true,
+
+        "icon": "",
+
+        "icons": {
+
+            "neutral": "",
+            "happy": "",
+            "sad": "",
+            "angry": "",
+            "embarrassed": "",
+            "blushing": "",
+            "confused": "",
+            "thinking": "",
+            "surprised": "",
+            "laughing": "",
+            "crying": "",
+            "sleepy": "",
+            "determined": ""
+
+        },
+
+        "banner": "",
+
+        "gallery": [
+
+        ]
+
+    },
+
+    "audio": {
+
+        "greeting": "",
+        "voice": "",
+        "ambient": "",
+        "typing": "",
+        "notification": ""
+
+    },
+
+    "video": {
+
+        "idle": "",
+        "talking": "",
+        "intro": ""
+
+    },
+
+    "fonts": {
+
+        "chat": "",
+        "title": ""
+
+    },
+
+    "theme": {
+
+        "accent_color": "",
+        "background": "",
+        "css": ""
+
+    },
+
+    "custom": {
+
+    }
+
+}
