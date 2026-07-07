@@ -1,120 +1,182 @@
 import {
+    loadPage
+} from "./router.js";
+
+
+import {
     startAI,
-    askAI
+    askAIStream
 } from "./ai.js";
+
 
 import {
     loadCharacter,
     createCharacterPrompt
 } from "./characters.js";
 
+
 import {
     getMemory,
     saveMessage
 } from "./memory.js";
+
 
 import {
     globalRules
 } from "./rules.js";
 
 
+
 /*
-    Register the Service Worker
+    Register Service Worker
 */
+
 if ("serviceWorker" in navigator) {
 
-    window.addEventListener("load", () => {
+    window.addEventListener(
+        "load",
+        () => {
 
-        navigator.serviceWorker
-            .register("./sw.js")
-            .then(() => {
+            navigator.serviceWorker
+                .register("./sw.js")
+                .then(() => {
 
-                console.log("Service Worker registered.");
+                    console.log(
+                        "Service Worker registered."
+                    );
 
-            })
-            .catch(error => {
+                })
+                .catch(error => {
 
-                console.error(
-                    "Service Worker failed:",
-                    error
-                );
+                    console.error(
+                        "Service Worker failed:",
+                        error
+                    );
 
-            });
+                });
 
-    });
+        }
+
+    );
 
 }
+
 
 
 let character;
+
 let systemPrompt;
 
 
-const chat =
-document.getElementById("chat");
 
-const input =
-document.getElementById("message");
-
-const button =
-document.getElementById("send");
-
-const status =
-document.getElementById("status");
+function addMessage(
+    text,
+    type
+) {
 
 
-function addMessage(text, type) {
+    const chat =
+    document.getElementById(
+        "chat"
+    );
+
+
+    if (!chat)
+        return;
+
+
 
     const div =
-    document.createElement("div");
+    document.createElement(
+        "div"
+    );
+
 
     div.className =
-    "message " + type;
+        "message " + type;
+
+
 
     div.textContent =
-    text;
+        text;
 
-    chat.appendChild(div);
+
+
+    chat.appendChild(
+        div
+    );
+
+
 
     chat.scrollTop =
-    chat.scrollHeight;
+        chat.scrollHeight;
+
+
+    return div;
 
 }
 
 
-async function setup() {
-
-    status.textContent =
-    "Loading character...";
 
 
-    character =
-    await loadCharacter(
-        "default.json"
+
+async function setupChat(){
+
+
+    const status =
+    document.getElementById(
+        "status"
     );
 
 
+
+    status.textContent =
+        "Loading character...";
+
+
+
+    character =
+        await loadCharacter(
+            "default.json"
+        );
+
+
+
     systemPrompt =
+
         globalRules +
+
         "\n\n" +
+
         createCharacterPrompt(
             character
         );
 
 
-    status.textContent =
-    "Loading AI...";
-
-
-    await startAI();
-
 
     status.textContent =
+        "Loading AI...";
+
+
+
+    await startAI(
+
+        character.ai
+        ?.preferred_model
+
+    );
+
+
+
+    status.textContent =
+
         `${character.metadata.name} ready`;
 
 
 
-    if (character.chat.greeting) {
+
+    if(character.chat.greeting){
+
 
         addMessage(
 
@@ -126,19 +188,34 @@ async function setup() {
 
     }
 
+
 }
 
 
-async function sendMessage() {
+
+
+
+async function sendMessage(){
+
+
+    const input =
+    document.getElementById(
+        "message"
+    );
+
 
     const text =
     input.value.trim();
 
-    if (!text)
+
+
+    if(!text)
         return;
 
 
+
     input.value = "";
+
 
 
     addMessage(
@@ -150,6 +227,7 @@ async function sendMessage() {
     );
 
 
+
     saveMessage(
 
         "user",
@@ -159,52 +237,163 @@ async function sendMessage() {
     );
 
 
-    const reply =
-    await askAI(
+
+    const replyBox =
+        addMessage(
+
+            character.metadata.name + ": ",
+
+            "ai"
+
+        );
+
+
+
+    let fullReply = "";
+
+
+
+    await askAIStream(
 
         systemPrompt,
 
-        getMemory()
+        getMemory(),
+
+
+        token => {
+
+
+            fullReply += token;
+
+
+            replyBox.textContent =
+
+                `${character.metadata.name}: ${fullReply}`;
+
+
+        }
 
     );
 
-
-    addMessage(
-
-        `${character.metadata.name}: ${reply}`,
-
-        "ai"
-
-    );
 
 
     saveMessage(
 
         "assistant",
 
-        reply
+        fullReply
 
     );
+
 
 }
 
 
-button.onclick =
-sendMessage;
 
 
-input.addEventListener(
-    "keydown",
+
+
+
+document.addEventListener(
+
+    "pageLoaded",
+
     event => {
 
-        if (event.key === "Enter") {
 
-            sendMessage();
+        if(
+
+            event.detail.page === "chat"
+
+        ){
+
+
+            const button =
+            document.getElementById(
+                "send"
+            );
+
+
+            const input =
+            document.getElementById(
+                "message"
+            );
+
+
+
+            button.onclick =
+                sendMessage;
+
+
+
+            input.addEventListener(
+
+                "keydown",
+
+                event => {
+
+
+                    if(
+                        event.key === "Enter"
+                    ){
+
+                        sendMessage();
+
+                    }
+
+
+                }
+
+            );
+
+
+
+            setupChat();
+
 
         }
 
+
     }
+
 );
 
 
-setup();
+
+
+
+document
+.querySelectorAll(
+    "[data-page]"
+)
+
+.forEach(
+
+    button => {
+
+
+        button.onclick =
+        () => {
+
+
+            loadPage(
+
+                button.dataset.page
+
+            );
+
+
+        };
+
+
+    }
+
+);
+
+
+
+
+
+loadPage(
+    "chat"
+);
