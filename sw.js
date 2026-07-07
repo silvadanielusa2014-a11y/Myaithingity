@@ -1,93 +1,53 @@
 const CACHE_NAME =
-    "myaithingity-shell-v2";
-
+    "myaithingity-shell-v1";
 
 
 const APP_FILES = [
 
-
     "./",
 
-
     "./index.html",
-
     "./character-creator.html",
-
     "./ai-models.html",
-
 
     "./manifest.json",
 
 
-
     "./css/style.css",
-
     "./css/creator.css",
 
 
-
-
     "./js/app.js",
-
     "./js/router.js",
+    "./js/ai.js",
+    "./js/webllm.js",
+    "./js/aiManager.js",
+    "./js/aiModels.js",
+    "./js/modelManager.js",
 
+    "./js/assetLoader.js",
+    "./js/characterManager.js",
+    "./js/characters.js",
+    "./js/creator.js",
+    "./js/memory.js",
+    "./js/rules.js",
     "./js/ui.js",
 
 
-
-    "./js/ai.js",
-
-    "./js/webllm.js",
-
-    "./js/aiManager.js",
-
-    "./js/aiModels.js",
-
-    "./js/modelManager.js",
-
-
-
-    "./js/assetLoader.js",
-
-    "./js/characterManager.js",
-
-    "./js/characters.js",
-
-    "./js/creator.js",
-
-    "./js/memory.js",
-
-    "./js/rules.js",
-
-
-
-
     "./views/chat.html",
-
     "./views/characters.html",
-
     "./views/models.html",
-
     "./views/settings.html"
-
-
 
 ];
 
 
 
-
-
-
 self.addEventListener(
-
     "install",
-
     event => {
 
-
         event.waitUntil(
-
 
             caches.open(
                 CACHE_NAME
@@ -97,51 +57,34 @@ self.addEventListener(
 
                 async cache => {
 
-
                     for (
-
-                        const file
-
-                        of APP_FILES
-
+                        const file of APP_FILES
                     ) {
 
-
                         try {
-
 
                             await cache.add(
                                 file
                             );
 
-
                         }
-
 
                         catch(error) {
 
-
                             console.warn(
-
-                                "Failed to cache:",
+                                "Cache failed:",
                                 file
-
                             );
-
 
                         }
 
-
                     }
-
 
                 }
 
             )
 
-
         );
-
 
     }
 
@@ -151,17 +94,11 @@ self.addEventListener(
 
 
 
-
-
 self.addEventListener(
-
     "activate",
-
     event => {
 
-
         event.waitUntil(
-
 
             caches.keys()
 
@@ -169,19 +106,15 @@ self.addEventListener(
 
                 keys => {
 
-
                     return Promise.all(
 
                         keys.map(
 
                             key => {
 
-
                                 if(
-
                                     key !== CACHE_NAME
-
-                                ){
+                                ) {
 
                                     return caches.delete(
                                         key
@@ -189,21 +122,17 @@ self.addEventListener(
 
                                 }
 
-
                             }
 
                         )
 
                     );
 
-
                 }
 
             )
 
-
         );
-
 
     }
 
@@ -213,47 +142,52 @@ self.addEventListener(
 
 
 
-
-
-
 self.addEventListener(
-
     "fetch",
-
     event => {
+
+
+        const url =
+        new URL(
+            event.request.url
+        );
+
+
+        /*
+            Ignore:
+            - WebLLM CDN
+            - model downloads
+            - external resources
+        */
+
+        if(
+            url.origin !== location.origin
+        ) {
+
+            return;
+
+        }
+
 
 
         event.respondWith(
 
-
             caches.match(
-
                 event.request
-
             )
 
             .then(
 
                 cached => {
 
-
-                    if(cached){
-
-                        return cached;
-
-                    }
-
-
-
-                    return fetch(
+                    return cached ||
+                    fetch(
                         event.request
                     );
-
 
                 }
 
             )
-
 
         );
 
