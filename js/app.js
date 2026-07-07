@@ -241,7 +241,7 @@ async function sendMessage(){
     const replyBox =
         addMessage(
 
-            character.metadata.name + ": ",
+            character.name + ": ",
 
             "ai"
 
@@ -268,7 +268,7 @@ async function sendMessage(){
 
             replyBox.textContent =
 
-                `${character.metadata.name}: ${fullReply}`;
+                `${character.name}: ${fullReply}`;
 
 
         }
