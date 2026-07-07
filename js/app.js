@@ -18,8 +18,35 @@ import {
 } from "./rules.js";
 
 
-let character;
+/*
+    Register the Service Worker
+*/
+if ("serviceWorker" in navigator) {
 
+    window.addEventListener("load", () => {
+
+        navigator.serviceWorker
+            .register("./sw.js")
+            .then(() => {
+
+                console.log("Service Worker registered.");
+
+            })
+            .catch(error => {
+
+                console.error(
+                    "Service Worker failed:",
+                    error
+                );
+
+            });
+
+    });
+
+}
+
+
+let character;
 let systemPrompt;
 
 
@@ -36,7 +63,7 @@ const status =
 document.getElementById("status");
 
 
-function addMessage(text,type){
+function addMessage(text, type) {
 
     const div =
     document.createElement("div");
@@ -49,11 +76,13 @@ function addMessage(text,type){
 
     chat.appendChild(div);
 
+    chat.scrollTop =
+    chat.scrollHeight;
+
 }
 
 
-
-async function setup(){
+async function setup() {
 
     status.textContent =
     "Loading character...";
@@ -66,10 +95,8 @@ async function setup(){
 
 
     systemPrompt =
-        globalRules
-        +
-        "\n\n"
-        +
+        globalRules +
+        "\n\n" +
         createCharacterPrompt(
             character
         );
@@ -83,33 +110,52 @@ async function setup(){
 
 
     status.textContent =
-    `${character.name} ready`;
+        `${character.metadata.name} ready`;
+
+
+
+    if (character.chat.greeting) {
+
+        addMessage(
+
+            `${character.metadata.name}: ${character.chat.greeting}`,
+
+            "ai"
+
+        );
+
+    }
 
 }
 
 
-
-async function sendMessage(){
+async function sendMessage() {
 
     const text =
     input.value.trim();
 
+    if (!text)
+        return;
 
-    if(!text)return;
 
-
-    input.value="";
+    input.value = "";
 
 
     addMessage(
-        "You: "+text,
+
+        "You: " + text,
+
         "user"
+
     );
 
 
     saveMessage(
+
         "user",
+
         text
+
     );
 
 
@@ -125,9 +171,7 @@ async function sendMessage(){
 
     addMessage(
 
-        character.name+
-        ": "+
-        reply,
+        `${character.metadata.name}: ${reply}`,
 
         "ai"
 
@@ -145,18 +189,22 @@ async function sendMessage(){
 }
 
 
-
 button.onclick =
 sendMessage;
 
 
-input.onkeydown =
-(e)=>{
+input.addEventListener(
+    "keydown",
+    event => {
 
-    if(e.key==="Enter")
-        sendMessage();
+        if (event.key === "Enter") {
 
-};
+            sendMessage();
+
+        }
+
+    }
+);
 
 
 setup();
