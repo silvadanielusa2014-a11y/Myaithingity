@@ -9,38 +9,71 @@ async function getCache() {
 
 }
 
+/*
+    Checks if a string looks like a URL.
+*/
+function isURL(text) {
+
+    if (typeof text !== "string")
+        return false;
+
+    return (
+        text.startsWith("http://") ||
+        text.startsWith("https://")
+    );
+
+}
 
 /*
-    Loads a single asset.
+    Loads one asset.
 
-    Cache
-        ↓
-    Internet
-        ↓
-    Cache + Return
+    Returns:
+
+    {
+        success: true/false,
+        url: "...",
+        cached: true/false
+    }
 */
 export async function loadAsset(url) {
 
-    if (!url)
-        return null;
+    if (!isURL(url)) {
+
+        return {
+
+            success: false,
+            url: null,
+            cached: false
+
+        };
+
+    }
 
     const cache = await getCache();
 
-    const cached = await cache.match(url);
+    const cachedResponse = await cache.match(url);
 
-    if (cached) {
+    if (cachedResponse) {
 
-        console.log("Loaded from cache:", url);
+        return {
 
-        return url;
+            success: true,
+            url,
+            cached: true
+
+        };
 
     }
 
     if (!navigator.onLine) {
 
-        console.warn("Offline:", url);
+        return {
 
-        return null;
+            success: false,
+            url: null,
+            cached: false
+
+        };
 
     }
 
@@ -48,104 +81,122 @@ export async function loadAsset(url) {
 
         const response = await fetch(url);
 
-        if (!response.ok)
-            return null;
+        if (!response.ok) {
+
+            return {
+
+                success: false,
+                url: null,
+                cached: false
+
+            };
+
+        }
 
         await cache.put(
             url,
             response.clone()
         );
 
-        console.log("Cached:", url);
+        return {
 
-        return url;
+            success: true,
+            url,
+            cached: false
+
+        };
 
     }
 
-    catch (error) {
+    catch {
 
-        console.error(error);
+        return {
 
-        return null;
+            success: false,
+            url: null,
+            cached: false
+
+        };
 
     }
 
 }
 
-
 /*
-    Loads every asset in an object.
-
-    Example:
-
-    await cacheAssets(character.assets.images);
+    Recursively caches every URL
+    inside an object.
 */
 export async function cacheAssets(object) {
 
     if (!object)
         return;
 
-    for (const value of Object.values(object)) {
+    if (typeof object === "string") {
 
-        if (typeof value === "string") {
+        if (isURL(object))
+            await loadAsset(object);
 
-            await loadAsset(value);
+        return;
 
-        }
+    }
 
-        else if (Array.isArray(value)) {
+    if (Array.isArray(object)) {
 
-            for (const item of value) {
+        for (const item of object)
+            await cacheAssets(item);
 
-                if (typeof item === "string")
-                    await loadAsset(item);
+        return;
 
-            }
+    }
 
-        }
+    if (typeof object === "object") {
 
-        else if (typeof value === "object") {
-
+        for (const value of Object.values(object))
             await cacheAssets(value);
-
-        }
 
     }
 
 }
 
-
 /*
-    Is a URL cached?
+    Removes every cached asset.
 */
-export async function isCached(url) {
-
-    const cache = await getCache();
-
-    return (
-        await cache.match(url)
-    ) !== undefined;
-
-}
-
-
-/*
-    Remove every cached asset.
-*/
-export async function clearCache() {
+export async function clearAssetCache() {
 
     await caches.delete(CACHE_NAME);
 
 }
 
-
 /*
-    Returns every cached request.
+    Returns every cached URL.
 */
 export async function getCachedAssets() {
 
     const cache = await getCache();
 
-    return await cache.keys();
+    const requests = await cache.keys();
+
+    return requests.map(request => request.url);
+
+}
+
+/*
+    Removes one asset from cache.
+*/
+export async function removeAsset(url) {
+
+    const cache = await getCache();
+
+    await cache.delete(url);
+
+}
+
+/*
+    Downloads every asset before
+    the user goes offline.
+*/
+export async function preloadAssets(assetObject) {
+
+    await cacheAssets(assetObject);
 
 }
