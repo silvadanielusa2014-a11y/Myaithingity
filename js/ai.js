@@ -2,27 +2,29 @@ import {
 
     loadModel,
 
-    generate
+    generate,
+
+    generateStream
 
 } from "./webllm.js";
 
 
 
-let activeModel = null;
+let currentModel = null;
 
 
 
 export async function startAI(
-    model
-){
+    modelId
+) {
 
-    activeModel =
-    model;
+    currentModel =
+        modelId;
 
 
     await loadModel(
 
-        model,
+        modelId,
 
         progress => {
 
@@ -38,17 +40,17 @@ export async function startAI(
 
 
 
-export async function askAI(
+function buildMessages(
     systemPrompt,
     memory
-){
+) {
 
 
-    const messages = [
+    return [
 
         {
 
-            role:"system",
+            role: "system",
 
             content:
             systemPrompt
@@ -56,22 +58,74 @@ export async function askAI(
         },
 
 
-        ...memory.map(message => ({
+        ...memory.map(
+            message => ({
 
-            role:
-            message.role,
+                role:
+                message.role,
 
-            content:
-            message.content
+                content:
+                message.content
 
-        }))
+            })
+
+        )
 
     ];
 
+}
+
+
+
+export async function askAI(
+    systemPrompt,
+    memory
+) {
 
 
     return await generate(
-        messages
+
+        buildMessages(
+
+            systemPrompt,
+
+            memory
+
+        )
+
     );
+
+}
+
+
+
+export async function askAIStream(
+    systemPrompt,
+    memory,
+    callback
+) {
+
+
+    return await generateStream(
+
+        buildMessages(
+
+            systemPrompt,
+
+            memory
+
+        ),
+
+        callback
+
+    );
+
+}
+
+
+
+export function getCurrentModel(){
+
+    return currentModel;
 
 }
