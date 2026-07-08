@@ -12,28 +12,33 @@
 </head>
 <body>
     <div id="app-container">
-        <!-- Sidebar -->
+        
+        <!-- Left Sidebar -->
         <aside id="sidebar">
-            <header>
+            <div class="sidebar-header">
                 <h1>Myaithingity</h1>
-                <button id="new-chat">+ New Chat</button>
-            </header>
-
-            <div class="search">
-                <input type="text" id="search-input" placeholder="Search characters...">
+                <button id="new-character">+ New Character</button>
             </div>
-
-            <nav>
-                <button data-page="chat" class="active">💬 Chat</button>
-                <button data-page="characters">👤 Characters</button>
-                <button data-page="models">🧠 Models</button>
-                <button data-page="settings">⚙ Settings</button>
-            </nav>
+            
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Search characters or chats...">
+            </div>
+            
+            <div class="sidebar-nav">
+                <button data-page="chat" class="nav-btn active">💬 Chat</button>
+                <button data-page="characters" class="nav-btn">👤 Characters</button>
+                <button data-page="models" class="nav-btn">🧠 AI Models</button>
+                <button data-page="settings" class="nav-btn">⚙ Settings</button>
+            </div>
+            
+            <!-- Character List will go here (populated by JS later) -->
+            <div id="character-list" class="character-list">
+                <!-- Dynamically filled -->
+            </div>
         </aside>
 
-        <!-- Main Content -->
+        <!-- Main Area -->
         <main id="app">
-            <!-- Pages will be loaded here by router -->
             Loading...
         </main>
     </div>
