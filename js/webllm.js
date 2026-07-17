@@ -1,4 +1,4 @@
-\let engine = null;
+let engine = null;
 
 
 export async function loadModel(
