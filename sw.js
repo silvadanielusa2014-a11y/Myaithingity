@@ -1,5 +1,5 @@
 const CACHE_NAME =
-    "myaithingity-shell-v2";
+    "myaithingity-shell-v3";
 const APP_FILES = [
     "./",
     "./index.html",
