@@ -94,6 +94,32 @@ async function renderModels(){
 
 
 
+        // Progress readout — hidden until a download is actually in
+        // flight, so installed/idle cards stay clean.
+        const progressText =
+        createElement(
+            "p",
+            "model-progress",
+            ""
+        );
+        progressText.style.display = "none";
+
+        const progressTrack =
+        createElement(
+            "div",
+            "model-progress-track"
+        );
+        progressTrack.style.display = "none";
+
+        const progressFill =
+        createElement(
+            "div",
+            "model-progress-fill"
+        );
+        progressTrack.appendChild(progressFill);
+
+
+
         const button =
         createElement(
             "button",
@@ -126,15 +152,51 @@ async function renderModels(){
 
             else {
 
+                progressText.style.display = "block";
+                progressTrack.style.display = "block";
+                progressText.textContent = "Starting download…";
 
-                button.textContent =
-                "Downloading...";
+                try {
 
+                    await downloadModel(
+                        model,
+                        report => {
 
-                await downloadModel(
-                    model
-                );
+                            // WebLLM's progress reports carry a 0-1
+                            // "progress" value and a human-readable
+                            // "text" field — use both if present.
+                            const pct =
+                                typeof report.progress === "number"
+                                ? Math.round(report.progress * 100)
+                                : null;
 
+                            progressFill.style.width =
+                                (pct ?? 0) + "%";
+
+                            progressText.textContent =
+                                pct !== null
+                                ? `${report.text || "Downloading"} (${pct}%)`
+                                : (report.text || "Downloading…");
+
+                        }
+                    );
+
+                    progressText.textContent = "Done.";
+
+                } catch (error) {
+
+                    console.error(
+                        "Model download failed:",
+                        error
+                    );
+
+                    progressText.textContent =
+                        "Download failed — see console for details.";
+
+                    button.disabled = false;
+                    return;
+
+                }
 
             }
 
@@ -152,6 +214,10 @@ async function renderModels(){
         card.appendChild(info);
 
         card.appendChild(description);
+
+        card.appendChild(progressText);
+
+        card.appendChild(progressTrack);
 
         card.appendChild(button);
 
