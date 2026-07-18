@@ -14,12 +14,14 @@ import {
 
 let models = [];
 
-const container =
-document.getElementById("models");
-
 
 
 async function loadModels(){
+
+    const container =
+    document.getElementById("models");
+
+    if (!container) return;
 
 
     const response =
@@ -36,14 +38,14 @@ async function loadModels(){
     data.models;
 
 
-    await renderModels();
+    await renderModels(container);
 
 }
 
 
 
 
-async function renderModels(){
+async function renderModels(container){
 
 
     clear(container);
@@ -162,9 +164,6 @@ async function renderModels(){
                         model,
                         report => {
 
-                            // WebLLM's progress reports carry a 0-1
-                            // "progress" value and a human-readable
-                            // "text" field — use both if present.
                             const pct =
                                 typeof report.progress === "number"
                                 ? Math.round(report.progress * 100)
@@ -202,7 +201,7 @@ async function renderModels(){
 
 
 
-            await renderModels();
+            await renderModels(container);
 
 
         };
@@ -231,4 +230,17 @@ async function renderModels(){
 
 
 
-loadModels();
+// Runs every time the router swaps in the "models" fragment, rather
+// than once at module load — this file is now imported once by app.js
+// and reused across navigations instead of being its own page's entry
+// script.
+document.addEventListener(
+    "pageLoaded",
+    event => {
+
+        if (event.detail.page === "models") {
+            loadModels();
+        }
+
+    }
+);
